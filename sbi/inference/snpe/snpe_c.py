@@ -324,7 +324,7 @@ class SNPE_C(PosteriorEstimator):
             choices = torch.multinomial(probs, num_samples=num_atoms - 1, replacement=False)
             contrasting_theta = theta[choices]
         else:
-            contrasting_theta = repeat_rows(sp, batch_size)
+            contrasting_theta = sp.repeat(batch_size,1,1)
         
         # We can now create our sets of atoms from the contrasting parameter sets
         # we have generated.
