@@ -313,9 +313,10 @@ class SNPE_C(PosteriorEstimator):
         batch_size = theta.shape[0]
 
         num_atoms = self._num_atoms
-        # num_atoms = int(
-        #     clamp_and_warn("num_atoms", self._num_atoms, min_val=2, max_val=batch_size)
-        # )
+        if sp is None:
+            num_atoms = int(
+                clamp_and_warn("num_atoms", self._num_atoms, min_val=2, max_val=batch_size)
+            )
 
         # Each set of parameter atoms is evaluated using the same x,
         # so we repeat rows of the data x, e.g. [1, 2] -> [1, 1, 2, 2]
