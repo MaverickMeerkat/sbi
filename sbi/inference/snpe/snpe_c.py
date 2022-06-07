@@ -85,6 +85,7 @@ class SNPE_C(PosteriorEstimator):
 
     def train(
         self,
+        sp,
         num_atoms: int = 10,
         training_batch_size: int = 50,
         learning_rate: float = 5e-4,
@@ -320,7 +321,6 @@ class SNPE_C(PosteriorEstimator):
         # of the theta in the batch.
         if sp is None:
             probs = ones(batch_size, batch_size) * (1 - eye(batch_size)) / (batch_size - 1)
-
             choices = torch.multinomial(probs, num_samples=num_atoms - 1, replacement=False)
             contrasting_theta = theta[choices]
         else:
