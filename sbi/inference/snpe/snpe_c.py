@@ -320,11 +320,11 @@ class SNPE_C(PosteriorEstimator):
         # we sample without replacement num_atoms - 1 times from the rest
         # of the theta in the batch.
         if sp is None:
-            probs = ones(batch_size, batch_size) * (1 - eye(batch_size)) / (batch_size - 1)
+            probs = (1 - eye(batch_size)) / (batch_size - 1)
             choices = torch.multinomial(probs, num_samples=num_atoms - 1, replacement=False)
             contrasting_theta = theta[choices]
         else:
-            contrasting_theta = sp
+            contrasting_theta = repeat_rows(sp, batch_size)
         
         # We can now create our sets of atoms from the contrasting parameter sets
         # we have generated.
