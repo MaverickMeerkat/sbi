@@ -154,7 +154,7 @@ class SNPE_C(PosteriorEstimator):
         if sp is None:
             self._num_atoms = num_atoms
         else:
-            self._num_atoms = len(sp.squeeze())
+            self._num_atoms = len(sp.squeeze())+1
         self._use_combined_loss = use_combined_loss
         kwargs = del_entries(
             locals(), entries=("self", "__class__", "num_atoms", "use_combined_loss")
