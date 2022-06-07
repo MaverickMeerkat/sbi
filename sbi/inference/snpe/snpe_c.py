@@ -2,6 +2,7 @@
 # under the Affero General Public License v3, see <https://www.gnu.org/licenses/>.
 
 
+from tkinter.messagebox import NO
 from typing import Callable, Dict, Optional, Union
 
 import torch
@@ -150,7 +151,10 @@ class SNPE_C(PosteriorEstimator):
         # requiring the signature to have `num_atoms`, save it for use below, and
         # continue. It's sneaky because we are using the object (self) as a namespace
         # to pass arguments between functions, and that's implicit state management.
-        self._num_atoms = num_atoms
+        if sp is None:
+            self._num_atoms = num_atoms
+        else:
+            self._num_atoms = len(sp.squeeze())
         self._use_combined_loss = use_combined_loss
         kwargs = del_entries(
             locals(), entries=("self", "__class__", "num_atoms", "use_combined_loss")
@@ -308,9 +312,10 @@ class SNPE_C(PosteriorEstimator):
 
         batch_size = theta.shape[0]
 
-        num_atoms = int(
-            clamp_and_warn("num_atoms", self._num_atoms, min_val=2, max_val=batch_size)
-        )
+        num_atoms = self._num_atoms
+        # num_atoms = int(
+        #     clamp_and_warn("num_atoms", self._num_atoms, min_val=2, max_val=batch_size)
+        # )
 
         # Each set of parameter atoms is evaluated using the same x,
         # so we repeat rows of the data x, e.g. [1, 2] -> [1, 1, 2, 2]
