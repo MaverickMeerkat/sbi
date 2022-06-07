@@ -154,6 +154,7 @@ class PosteriorEstimator(NeuralInference, ABC):
 
     def train(
         self,
+        sp: Tensor = None,
         training_batch_size: int = 50,
         learning_rate: float = 5e-4,
         validation_fraction: float = 0.1,
@@ -302,7 +303,7 @@ class PosteriorEstimator(NeuralInference, ABC):
                 )
 
                 train_losses = self._loss(
-                    theta_batch, x_batch, masks_batch, proposal, calibration_kernel
+                    theta_batch, x_batch, sp, masks_batch, proposal, calibration_kernel
                 )
                 train_loss = torch.mean(train_losses)
                 train_log_probs_sum -= train_losses.sum().item()
@@ -336,6 +337,7 @@ class PosteriorEstimator(NeuralInference, ABC):
                     val_losses = self._loss(
                         theta_batch,
                         x_batch,
+                        sp,
                         masks_batch,
                         proposal,
                         calibration_kernel,
@@ -496,6 +498,7 @@ class PosteriorEstimator(NeuralInference, ABC):
         self,
         theta: Tensor,
         x: Tensor,
+        sp: Tensor,
         masks: Tensor,
         proposal: Optional[Any],
         calibration_kernel: Callable,
@@ -512,7 +515,7 @@ class PosteriorEstimator(NeuralInference, ABC):
             # Use posterior log prob (without proposal correction) for first round.
             log_prob = self._neural_net.log_prob(theta, x)
         else:
-            log_prob = self._log_prob_proposal_posterior(theta, x, masks, proposal)
+            log_prob = self._log_prob_proposal_posterior(theta, x, sp, masks, proposal)
 
         return -(calibration_kernel(x) * log_prob)
 

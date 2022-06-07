@@ -257,6 +257,7 @@ class SNPE_C(PosteriorEstimator):
         self,
         theta: Tensor,
         x: Tensor,
+        sp: Tensor,
         masks: Tensor,
         proposal: DirectPosterior,
     ) -> Tensor:
@@ -279,10 +280,10 @@ class SNPE_C(PosteriorEstimator):
         if self.use_non_atomic_loss:
             return self._log_prob_proposal_posterior_mog(theta, x, proposal)
         else:
-            return self._log_prob_proposal_posterior_atomic(theta, x, masks)
+            return self._log_prob_proposal_posterior_atomic(theta, x, sp, masks)
 
     def _log_prob_proposal_posterior_atomic(
-        self, theta: Tensor, x: Tensor, masks: Tensor
+        self, theta: Tensor, x: Tensor, sp: Tensor, masks: Tensor
     ):
         """Return log probability of the proposal posterior for atomic proposals.
 
@@ -317,10 +318,10 @@ class SNPE_C(PosteriorEstimator):
         # To generate the full set of atoms for a given item in the batch,
         # we sample without replacement num_atoms - 1 times from the rest
         # of the theta in the batch.
-        probs = ones(batch_size, batch_size) * (1 - eye(batch_size)) / (batch_size - 1)
+        # probs = ones(batch_size, batch_size) * (1 - eye(batch_size)) / (batch_size - 1)
 
-        choices = torch.multinomial(probs, num_samples=num_atoms - 1, replacement=False)
-        contrasting_theta = theta[choices]
+        # choices = torch.multinomial(probs, num_samples=num_atoms - 1, replacement=False)
+        contrasting_theta = sp # theta[choices]
 
         # We can now create our sets of atoms from the contrasting parameter sets
         # we have generated.
